@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ACTIVITIES_TEMPLATES = {"Existence", "Absence", "Exactly", "Init", "End"}
 RESPONSE_TEMPLATES = {"Response", "Chain Response", "Precedence", "Chain Precedence", "Succession", "Chain Succession", "Alternate Response", "Alternate Precedence", "Alternate Succession"}
 IMMEDIATE_RESPONSE_TEMPLATES = {"Chain Response", "Chain Precedence", "Chain Succession", "Alternate Precedence"}
@@ -11,3 +12,18 @@ PARALLEL_TEMPLATES = {"Co-Existence"}
 GATEWAY_TEMPLATES = {"Choice"}
 EXCLUSIVE_GATEWAY_TEMPLATES = {"Exclusive Choice"}
 NOT_COEXISTENCE_TEMPLATES = {"Not Co-Existence"}
+=======
+ACTIVITIES_TEMPLATES = {"Existence", "Absence", "Exactly", "Init", "End"}
+RESPONSE_TEMPLATES = {"Response", "Chain Response", "Precedence", "Chain Precedence", "Succession", "Chain Succession", "Alternate Response", "Alternate Precedence", "Alternate Succession"}
+IMMEDIATE_RESPONSE_TEMPLATES = {"Chain Response", "Chain Precedence", "Chain Succession", "Alternate Precedence"}
+ONLY_RESPONSE_TEMPLATES = {"Response", "Precedence", "Succession", "Alternate Response"}
+NEGATION_TEMPLATES = {"Not Response", "Not Chain Response", "Not Precedence", "Not Chain Precedence", "Not Succession", "Not Chain Succession"}
+IMMEDIATE_NEGATION_TEMPLATES = {"Not Chain Response", "Not Chain Precedence", "Not Chain Succession"}
+ONLY_NEGATION_TEMPLATES = {"Not Response", "Not Precedence", "Not Succession"}
+NOT_AVAIABLE_FREE_SORTING = {"Not Responded Existence"}
+INDEPENDENCE_TEMPLATES = {"Responded Existence"}
+PARALLEL_TEMPLATES = {"Co-Existence"}
+GATEWAY_TEMPLATES = {"Choice"}
+EXCLUSIVE_GATEWAY_TEMPLATES = {"Exclusive Choice"}
+NOT_COEXISTENCE_TEMPLATES = {"Not Co-Existence"}
+>>>>>>> 616cea218b0ecea37f4460362e93cb29a982065b
