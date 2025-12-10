@@ -1,3 +1,48 @@
+from assertiontests_functions import Situation, Operator
+
+
+def parse_sbmn_model(model_strings):
+    sbmn_model = []
+
+    allowed_ops = {"DEP", "DEPC", "XOR", "UNI"}
+
+    for line in model_strings:
+        line = line.strip()
+
+        # Loop / JMP armazenado separado
+        if line.startswith("JMP"):
+            # loops.append(line)
+            continue
+
+        words = line.split()
+
+        # localizar onde está o operador
+        op_index = None
+        for i, w in enumerate(words):
+            if w in allowed_ops:
+                op_index = i
+                break
+
+        if op_index is None:
+            print(f"Aviso: linha ignorada (sem operador): {line}")
+            continue
+
+        op = words[op_index]
+        left = " ".join(words[:op_index])          # tudo antes do operador
+        right = " ".join(words[op_index + 1:])     # tudo depois do operador
+
+        if not left or not right:
+            print(f"Aviso: linha mal formatada: {line}")
+            continue
+
+        try:
+            sbmn_model.append(Situation(left, right, Operator[op]))
+        except KeyError:
+            print(f"Aviso: operador desconhecido: {line}")
+
+    return sbmn_model
+
+
 def generating_model(matrix):
     model = []
     for act1 in sorted(matrix.keys()):

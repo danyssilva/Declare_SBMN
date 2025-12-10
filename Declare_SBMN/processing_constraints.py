@@ -22,6 +22,33 @@ from initialize_functions import initialize_activities
 def reinterpreting_less_precise_constraints_pair(constraints_list, first_constraints, matrix, activity1, activity2):
     templates = constraints_list.get((activity1, activity2), [])
     first_templates = first_constraints.get((activity1, activity2), [])
+
+    print("First templates:", first_templates)
+    print("Current templates:", templates)
+    
+    count_dep_first = 0
+    count_uni_first = 0
+    count_xor_first = 0
+    count_choice_first = 0
+    count_indep_first = 0
+    count_negation_first = 0
+    count_indep_negation_first = 0
+    for temp in first_templates:
+        if temp in tuple(RESPONSE_TEMPLATES):
+            count_dep_first += 1
+        elif temp in tuple(NOT_AVAIABLE_FREE_SORTING):
+            count_indep_negation_first += 1
+        elif temp in tuple(PARALLEL_TEMPLATES):
+            count_uni_first += 1
+        elif temp in tuple(GATEWAY_TEMPLATES) or temp in tuple(EXCLUSIVE_GATEWAY_TEMPLATES):
+            count_choice_first += 1
+        elif temp in tuple(NOT_COEXISTENCE_TEMPLATES):
+            count_xor_first += 1
+        elif temp in tuple(INDEPENDENCE_TEMPLATES):
+            count_indep_first += 1
+        elif temp in tuple(NEGATION_TEMPLATES):
+            count_negation_first += 1
+    
     count_dep = 0
     count_uni = 0
     count_xor = 0
@@ -48,13 +75,17 @@ def reinterpreting_less_precise_constraints_pair(constraints_list, first_constra
     dep_factor = 1 if count_dep > (count_uni + count_xor + count_choice) and count_dep > (count_indep + count_negation) else 0
     # depc_factor = 1 if count_choice > 0 and count_indep > 0 and count_xor > 0 and count_indep_negation > 0 and count_dep == 0 and count_uni == 0 and count_negation == 0 else 0
     depc_factor = 1 if count_choice > 1 and count_indep > 0 and count_xor == 0 and count_dep == 0 and count_uni == 0 and count_negation == 0 else 0
-    uni_factor = 1 if (count_uni + count_choice + count_indep) > (count_dep + count_xor + count_negation) and (count_choice + count_uni > 0)  and count_uni > 0 and count_choice > 0 else 0
+    uni_factor = 1 if (count_uni + count_choice + count_indep) > (count_dep + count_xor + count_negation) and (count_choice + count_uni > 0)  and count_uni > 0 and count_choice > 0 and count_indep_negation == 0 else 0
     xor_factor = 1 if (count_xor + count_negation) > (count_dep + count_uni + count_indep) and count_xor > 0 else 0
 
     if dep_factor > 0:
         print("Interpreted as DEP between", activity1, "and", activity2)
         return 'DEP'
-    if depc_factor > 0:
+    if depc_factor > 0 and count_negation_first < count_choice_first:
+        # if count_choice_first > 0 and count_negation_first > 0:
+        #     print("Interpreted as XOR between", activity1, "and", activity2)
+        #     return 'XOR'
+        # else:
         print("Interpreted as DEPC between", activity1, "and", activity2)
         return 'DEPC'
     if uni_factor > 0:
@@ -62,16 +93,16 @@ def reinterpreting_less_precise_constraints_pair(constraints_list, first_constra
             print("Interpreted as UNI between", activity1, "and", activity2)
             return 'UNI'
         else:
-            print("Interpreted as DEP between", activity1, "and", activity2, "due to non parallelism relations")
+            print("Interpreted as DEP between", activity1, "and", activity2, "due to non union relations")
             return 'DEP'
-    if xor_factor > 0:
+    if xor_factor > 0 and count_dep_first == 0:
         print("Interpreted as XOR between", activity1, "and", activity2)
         return 'XOR'
     return None
 
 def reinterpreting_less_precise_constraints(step, constraints_list, first_constraints, matrix, activities):
     for (act1, act2), templates in constraints_list.items():
-        print(f"\nInterpreting less precise constraints between '{act1}' and '{act2}': {templates}")
+        print(f"\nReinterpreting less precise constraints between '{act1}' and '{act2}': {templates}")
         interpreted_less_precise_pair = reinterpreting_less_precise_constraints_pair(constraints_list, first_constraints, matrix, act1, act2)
 
         print("Setting less precise interpretation comparing the results in the matrix.")
@@ -82,12 +113,12 @@ def reinterpreting_less_precise_constraints(step, constraints_list, first_constr
         #     inverted_pair = interpreting_less_precise_constraints_pair(constraints_list, matrix, act2, act1)
         #     if inverted_pair == 'XOR':
         #         matrix[act1][act2] = 'XOR'
-    # constraints_list, matrix = validating_mutual_dependencies_existence(constraints_list, matrix)
+    constraints_list, matrix = validating_mutual_dependencies_existence(constraints_list, matrix)
     constraints_list, matrix = validating_loop_in_constraint(constraints_list, matrix, activities)
     # constraints_list, matrix = verifying_self_loops(constraints_list, matrix, activities)
     constraints_list, matrix = validating_parallelism_existence(constraints_list, matrix, activities)
     matrix = validating_xor_existence_interpretation(constraints_list, matrix, activities)
-    # constraints_list, matrix = validating_circunstancial_dependencies(constraints_list, matrix)
+    constraints_list, matrix = validating_circunstancial_dependencies(constraints_list, matrix)
 
     return matrix
 
@@ -325,6 +356,15 @@ def process_constraints(step, constraints, matrix, activities):
 def reprocess_constraints(step, constraints, first_constraints, matrix, firts_activities):
     constraints_list = {}
     activities = initialize_activities(constraints)
+
+    for act, item in activities.items():
+        if matrix['BEGIN'][act] == '0' or matrix['END'][act] == '0':
+            for temp, card in item.items():
+                if temp == 'Init':
+                    matrix['BEGIN'][act] = card
+                elif temp == 'End':
+                    matrix['END'][act] = card
+
     for cnst in constraints:
         if not cnst.startswith(tuple(ACTIVITIES_TEMPLATES)):
             pattern = r"^'?([^[]+)\[([^,]+)\s*,\s*([^\]]+)\]\s*\|\s*\|?'?$"

@@ -6,8 +6,11 @@ import comparing_constraints_functions
 from comparing_constraints_functions import same_relations, same_depending_relations, same_dependent_gateway_relation_end_point, strongest_mutual_dependency
 
 def validating_constraints_start_end(constraints_list, start, end):
+    print("Validating constraints with BEGIN and END activities...")
     for (act1, act2), templates in constraints_list.items():
-        if act1 in end or act2 in start:
+        print("Analyzing pair: (", act1, ",", act2, ") with templates:", templates)
+        if (act1 in end and act2 not in end) or (act2 in start and act1 not in start):
+            print(f"Atention: Activity '{act1}' is in END set or '{act2}' is in BEGIN set.")
             for temp in templates:
                 print("temp:", temp)
                 if temp in RESPONSE_TEMPLATES:
@@ -133,6 +136,7 @@ def validating_loop_in_constraint(constraints_list, matrix, activities):
         count_neg = 0
         count_ind = 0
         count_choice = 0
+        count_excl = 0
         print(f"Analyzing loop possibility between '{act1}' and '{act2}'")
         for temp in templates:
             if temp in sorted(tuple(NEGATION_TEMPLATES)):
@@ -141,8 +145,10 @@ def validating_loop_in_constraint(constraints_list, matrix, activities):
                 count_ind += 1
             if temp in sorted(tuple(GATEWAY_TEMPLATES)):
                 count_choice += 1
+            if temp in sorted(tuple(EXCLUSIVE_GATEWAY_TEMPLATES)):
+                count_excl += 1
         print(f"count_neg={count_neg}, count_ind={count_ind}, count_choice={count_choice} between '{act1}' and '{act2}'")
-        if count_neg > 0 and count_ind > 0 and count_choice > 0:
+        if count_neg > 0 and count_ind > 0 and count_choice > 0 and count_excl == 0:
             count_jmp = 1
         if count_jmp > 0:
             print(f"Act2 '{act2}' occurrence analysis for loop possibility")
@@ -154,40 +160,31 @@ def validating_loop_in_constraint(constraints_list, matrix, activities):
             if act2_ocurrence > 1 and act2_max_ocurrence > 1 and act2_exactly_ocurrence > 1:
                 for (act3, act4), templates in constraints_list.items():
                     if act3 == act2 and act4 == act1:
+                        count_response = 0
+                        count_chain = 0
+                        count_negation = 0
+                        count_indep_negation = 0
+                        count_exclusive_choice = 0
+                        alternate_exists = False
                         for temp in sorted(templates):
+                            if temp in sorted(tuple(ONLY_RESPONSE_TEMPLATES)) and temp != "Alternate Response" and temp != "Alternate Precedence":
+                                count_response += 1
+                            if temp in sorted(tuple(IMMEDIATE_RESPONSE_TEMPLATES)) and temp != "Alternate Response" and temp != "Alternate Precedence":
+                                count_chain += 1
+                            if temp in sorted(tuple(NEGATION_TEMPLATES)):
+                                count_negation += 1
+                            if temp in sorted(tuple(NOT_AVAIABLE_FREE_SORTING)):
+                                count_indep_negation += 1
+                            if temp in sorted(tuple(EXCLUSIVE_GATEWAY_TEMPLATES)):
+                                count_exclusive_choice += 1
                             if temp == "Alternate Response" and matrix[act3][act4] == "DEP" and count_jmp > 0:
-                                print(f"Setting JMP between '{act1}' and '{act2}' due to loop possibility")
-                                matrix[act1][act2] = "JMP"
-                                break
-                    continue
-    return constraints_list, matrix
-
-def verifying_self_loops(constraints_list, matrix, activities):
-    for (act1, act2), templates in constraints_list.items():
-        count_resp = 0
-        count_neg = 0
-        count_ind = 0
-        count_choice = 0
-        for temp in templates:
-            if temp in sorted(tuple(RESPONSE_TEMPLATES)):
-                count_resp += 1
-            if temp in sorted(tuple(NEGATION_TEMPLATES)):
-                count_neg += 1
-            if temp in sorted(tuple(INDEPENDENCE_TEMPLATES)):
-                count_ind += 1
-            if temp in sorted(tuple(GATEWAY_TEMPLATES)):
-                count_choice += 1
-        if count_resp > 0 and count_neg > 0 and count_ind > 0 and count_choice > 0:
-            act2_ocurrence = int(activities[act2]['Existence']) if 'Existence' in activities[act2] else 0
-            act2_max_ocurrence = int(activities[act2]['Absence']) if 'Absence' in activities[act2] else 0
-            act2_exactly_ocurrence = int(activities[act2]['Exactly']) if 'Exactly' in activities[act2] else 0
-            if act2_ocurrence > 1 and act2_max_ocurrence > 1 and act2_exactly_ocurrence > 1:
-                for temp in sorted(templates):
-                    if temp == "Alternate Response" and matrix[act2][act1] == "DEP":
-                        act2_temp = [templates for (act3, act4), templates in constraints_list.items() if act3 == act2 and act4 == act1]
-                        if "Alternate Precedence" in act2_temp:
-                            matrix[act2][act2] = "JMP"
+                                alternate_exists = True
+                        print(f"Between '{act2}' and '{act1}': count_response={count_response}, count_chain={count_chain}, count_negation={count_negation}, count_indep_negation={count_indep_negation}")
+                        if alternate_exists and count_negation == 0 and count_indep_negation == 0 and count_exclusive_choice == 0:
+                            print(f"Setting JMP between '{act1}' and '{act2}' due to loop possibility")
+                            matrix[act1][act2] = "JMP"
                             break
+                    continue
     return constraints_list, matrix
 
 def validating_xor_existence_interpretation(constraints_list, matrix, activities):
