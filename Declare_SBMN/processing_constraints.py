@@ -11,7 +11,7 @@ from templates_groups import ACTIVITIES_TEMPLATES, RESPONSE_TEMPLATES, IMMEDIATE
 import sbmn_model_functions
 from sbmn_model_functions import generating_model
 import comparing_constraints_functions
-from comparing_constraints_functions import same_relations, same_depending_relations, same_dependent_gateway_relation_end_point, strongest_mutual_dependency
+from comparing_constraints_functions import same_relations, same_depending_relations, same_dependent_gateway_relation_end_point, strongest_mutual_dependency, verifying_another_dependency_existence, strongest_dependency
 import validating_functions
 from validating_functions import validating_constraints_start_end, validating_negative_constraints, validating_independence_constraints, validating_parallel_constraints, validating_response_constraints, validating_xor_existence_interpretation, validating_loop_in_constraint, validating_mutual_dependencies_existence, validating_circunstancial_dependencies, validating_parallelism_chain_existence, validating_parallelism_existence
 import activities_functions
@@ -78,7 +78,7 @@ def reinterpreting_less_precise_constraints_pair(constraints_list, first_constra
     uni_factor = 1 if (count_uni + count_choice + count_indep) > (count_dep + count_xor + count_negation) and (count_choice + count_uni > 0)  and count_uni > 0 and count_choice > 0 and count_indep_negation == 0 else 0
     xor_factor = 1 if (count_xor + count_negation) > (count_dep + count_uni + count_indep) and count_xor > 0 else 0
 
-    if dep_factor > 0:
+    if dep_factor > 0 and not verifying_another_dependency_existence(matrix, activity1, activity2):
         print("Interpreted as DEP between", activity1, "and", activity2)
         return 'DEP'
     if depc_factor > 0 and count_negation_first < count_choice_first:
@@ -86,10 +86,16 @@ def reinterpreting_less_precise_constraints_pair(constraints_list, first_constra
         #     print("Interpreted as XOR between", activity1, "and", activity2)
         #     return 'XOR'
         # else:
-        print("Interpreted as DEPC between", activity1, "and", activity2)
-        return 'DEPC'
+        if not verifying_another_dependency_existence(matrix, activity1, activity2):
+            print("Interpreted as DEPC between", activity1, "and", activity2)
+            return 'DEPC'
+        elif strongest_dependency(matrix, activity1, activity2) == True:
+            print("Interpreted as DEP between", activity1, "and", activity2, "due to strongest dependency")
+            return 'DEPC'
+        else:
+            return None
     if uni_factor > 0:
-        if same_depending_relations(constraints_list, matrix, activity1, activity2) and same_dependent_gateway_relation_end_point(constraints_list, matrix, activity1, activity2):
+        if same_depending_relations(constraints_list, matrix, activity1, activity2) and same_dependent_gateway_relation_end_point(constraints_list, matrix, activity1, activity2) and count_indep_negation_first == 0:
             print("Interpreted as UNI between", activity1, "and", activity2)
             return 'UNI'
         else:

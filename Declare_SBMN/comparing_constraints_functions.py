@@ -1,6 +1,28 @@
 import templates_groups
 from templates_groups import ACTIVITIES_TEMPLATES, RESPONSE_TEMPLATES, IMMEDIATE_RESPONSE_TEMPLATES, ONLY_RESPONSE_TEMPLATES, NEGATION_TEMPLATES, IMMEDIATE_NEGATION_TEMPLATES, ONLY_NEGATION_TEMPLATES, NOT_AVAIABLE_FREE_SORTING, INDEPENDENCE_TEMPLATES, PARALLEL_TEMPLATES, GATEWAY_TEMPLATES, EXCLUSIVE_GATEWAY_TEMPLATES, NOT_COEXISTENCE_TEMPLATES
 
+def strongest_dependency(constraints_list, activity1, activity_tested):
+    count_activity1_dep = 0
+    count_activity2_dep = 0
+    print("02 - Checking strongest mutual dependency between", activity1, "and", activity_tested)
+    for (act1, act2), templates in constraints_list.items():
+        if act2 == activity1 and act1 == activity_tested:
+            for temp in templates:
+                if temp in {'Chain Response', 'Chain Precedence', 'Chain Succession', 'Alternate Precedence'}:
+                    count_activity1_dep += 1
+    for (act1, act2), templates in constraints_list.items():
+        if act2 == activity1 and act1 != activity_tested:
+            for temp in templates:
+                if temp in {'Chain Response', 'Chain Precedence', 'Chain Succession', 'Alternate Precedence'}:
+                    count_activity2_dep += 1
+    print("03 - count_activity1_dep:", count_activity1_dep, "and count_activity2_dep:", count_activity2_dep)
+    if count_activity1_dep > count_activity2_dep:
+        return True
+    elif count_activity2_dep > count_activity1_dep:
+        return False
+    return None
+
+
 def strongest_mutual_dependency(constraints_list, activity1, activity2, activity_tested):
     count_activity1_dep = 0
     count_activity2_dep = 0
@@ -240,4 +262,11 @@ def same_dependent_gateway_relation_end_point(constraints_list, matrix, activity
             if sorted(tuple(activity1_relations)) == sorted(tuple(activity2_relations)):
                 print("True: Same dependent relations found between", activity1, "and", activity2)
                 return True
+    return False
+
+def verifying_another_dependency_existence(matrix, activity1, activity2):
+    for activity in matrix.keys():
+        if activity != activity1 and activity != activity2:
+            if matrix[activity1][activity] == "DEP":
+               return True
     return False
