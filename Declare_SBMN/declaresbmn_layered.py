@@ -88,10 +88,11 @@ if __name__ == "__main__":
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/ComputerRepair_2/log_sintetico_multimodelo.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/permition_2/RM_permition_2proc.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/E2_proc/RM_E2proc.xes"  # ajuste
-    log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS4/ITIL/BPIC14-PreProcessed-Filtered.xes"  # ajuste
+    # log_path = r"C:/Users/danys/Downloads/INPUTS/INPUTS/FOLDERS4/ITIL/BPIC14-PreProcessed-Filtered.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/MINIMETAL/mini_metal_log.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/MINIMETAL/metalmec_log.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/SELECAO/log_inscricao.xes"  # ajuste
+    log_path = r"C:/Users/danys/Downloads/INPUTS/INPUTS/SELECAO/log_inscricao_candidato.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/example_1.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS4/ComputerRepair_1/log_sintetico_2_modelos.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/log_exemplo_paralelismo.xes"  # ajuste
