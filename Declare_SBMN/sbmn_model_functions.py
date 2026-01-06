@@ -1,3 +1,4 @@
+import string
 from assertiontests_functions import Situation, Operator
 
 
@@ -24,7 +25,7 @@ def parse_sbmn_model(model_strings):
                 break
 
         if op_index is None:
-            print(f"Aviso: linha ignorada (sem operador): {line}")
+            #print(f"Aviso: linha ignorada (sem operador): {line}")
             continue
 
         op = words[op_index]
@@ -32,7 +33,7 @@ def parse_sbmn_model(model_strings):
         right = " ".join(words[op_index + 1:])     # tudo depois do operador
 
         if not left or not right:
-            print(f"Aviso: linha mal formatada: {line}")
+            #print(f"Aviso: linha mal formatada: {line}")
             continue
 
         try:
@@ -94,11 +95,12 @@ def generate_json_from_sbmn(matrix, activities, output_path=None):
     sorted_names = sorted(names)
     
     # Generate stable IDs: T0, T1, T2, ...
+    # id_map = {name: f"T{a}{i}" for a, (i, name) in zip(string.ascii_lowercase, enumerate(sorted_names))}
     id_map = {name: f"T{i}" for i, name in enumerate(sorted_names)}
     
     # Create list of Activities
     activities = [
-        {"id": id_map[n], "name": n, "type": "Task"} 
+        {"id": id_map[n], "nome": n, "tipo": "Tarefa"} 
         for n in sorted_names
     ]
     
@@ -125,23 +127,23 @@ def generate_json_from_sbmn(matrix, activities, output_path=None):
             if operator == 'JMP':
                 # For JMP, keep the original order
                 situations.append({
-                    "left": [{"id": id_map[left]}],
-                    "operator": operator,
-                    "right": [{"id": id_map[right]}]
+                    "esquerda": [{"id": id_map[left]}],
+                    "operador": operator,
+                    "direita": [{"id": id_map[right]}]
                 })
                 continue
             else:
                 # For all other operators: right operator left
                 situations.append({
-                    "left": [{"id": id_map[right]}],
-                    "operator": operator,
-                    "right": [{"id": id_map[left]}]
+                    "esquerda": [{"id": id_map[right]}],
+                    "operador": operator,
+                    "direita": [{"id": id_map[left]}]
                 })
     
     # Create final JSON structure
     json_structure = {
-        "Activities": activities,
-        "Situations": situations
+        "Atividades": activities,
+        "Situacoes": situations
     }
     
     # Save file if path provided

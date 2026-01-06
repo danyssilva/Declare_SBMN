@@ -23,8 +23,8 @@ def reinterpreting_less_precise_constraints_pair(constraints_list, first_constra
     templates = constraints_list.get((activity1, activity2), [])
     first_templates = first_constraints.get((activity1, activity2), [])
 
-    print("First templates:", first_templates)
-    print("Current templates:", templates)
+    #print("First templates:", first_templates)
+    #print("Current templates:", templates)
     
     count_dep_first = 0
     count_uni_first = 0
@@ -79,39 +79,39 @@ def reinterpreting_less_precise_constraints_pair(constraints_list, first_constra
     xor_factor = 1 if (count_xor + count_negation) > (count_dep + count_uni + count_indep) and count_xor > 0 else 0
 
     if dep_factor > 0 and not verifying_another_dependency_existence(matrix, activity1, activity2):
-        print("Interpreted as DEP between", activity1, "and", activity2)
+        #print("Interpreted as DEP between", activity1, "and", activity2)
         return 'DEP'
     if depc_factor > 0 and count_negation_first < count_choice_first:
         # if count_choice_first > 0 and count_negation_first > 0:
-        #     print("Interpreted as XOR between", activity1, "and", activity2)
+        #     #print("Interpreted as XOR between", activity1, "and", activity2)
         #     return 'XOR'
         # else:
         if not verifying_another_dependency_existence(matrix, activity1, activity2):
-            print("Interpreted as DEPC between", activity1, "and", activity2)
+            #print("Interpreted as DEPC between", activity1, "and", activity2)
             return 'DEPC'
-        elif strongest_dependency(matrix, activity1, activity2) == True:
-            print("Interpreted as DEP between", activity1, "and", activity2, "due to strongest dependency")
+        elif strongest_dependency(constraints_list, activity1, activity2) == True:
+            #print("Interpreted as DEP between", activity1, "and", activity2, "due to strongest dependency")
             return 'DEPC'
         else:
             return None
     if uni_factor > 0:
         if same_depending_relations(constraints_list, matrix, activity1, activity2) and same_dependent_gateway_relation_end_point(constraints_list, matrix, activity1, activity2) and count_indep_negation_first == 0:
-            print("Interpreted as UNI between", activity1, "and", activity2)
+            #print("Interpreted as UNI between", activity1, "and", activity2)
             return 'UNI'
         else:
-            print("Interpreted as DEP between", activity1, "and", activity2, "due to non union relations")
+            #print("Interpreted as DEP between", activity1, "and", activity2, "due to non union relations")
             return 'DEP'
     if xor_factor > 0 and count_dep_first == 0:
-        print("Interpreted as XOR between", activity1, "and", activity2)
+        #print("Interpreted as XOR between", activity1, "and", activity2)
         return 'XOR'
     return None
 
 def reinterpreting_less_precise_constraints(step, constraints_list, first_constraints, matrix, activities):
     for (act1, act2), templates in constraints_list.items():
-        print(f"\nReinterpreting less precise constraints between '{act1}' and '{act2}': {templates}")
+        #print(f"\nReinterpreting less precise constraints between '{act1}' and '{act2}': {templates}")
         interpreted_less_precise_pair = reinterpreting_less_precise_constraints_pair(constraints_list, first_constraints, matrix, act1, act2)
 
-        print("Setting less precise interpretation comparing the results in the matrix.")
+        #print("Setting less precise interpretation comparing the results in the matrix.")
         if matrix[act1][act2] == '0' and interpreted_less_precise_pair is not None:
             matrix[act1][act2] = interpreted_less_precise_pair
 
@@ -159,27 +159,27 @@ def interpreting_less_precise_constraints_pair(constraints_list, matrix, activit
     xor_factor = 1 if (count_xor + count_negation) > (count_dep + count_uni + count_indep) and count_xor > 0 else 0
 
     if dep_factor > 0:
-        print("Interpreted as DEP between", activity1, "and", activity2)
+        #print("Interpreted as DEP between", activity1, "and", activity2)
         return 'DEP'
     if depc_factor > 0:
-        print("Interpreted as DEPC between", activity1, "and", activity2)
+        #print("Interpreted as DEPC between", activity1, "and", activity2)
         return 'DEPC'
     if uni_factor > 0:
         if same_depending_relations(constraints_list, matrix, activity1, activity2) and same_dependent_gateway_relation_end_point(constraints_list, matrix, activity1, activity2):
-            print("Interpreted as UNI between", activity1, "and", activity2)
+            #print("Interpreted as UNI between", activity1, "and", activity2)
             return 'UNI'
         else:
-            print("Interpreted as DEP between", activity1, "and", activity2, "due to non parallelism relations")
+            #print("Interpreted as DEP between", activity1, "and", activity2, "due to non parallelism relations")
             return 'DEP'
     if xor_factor > 0:
-        print("Interpreted as XOR between", activity1, "and", activity2)
+        #print("Interpreted as XOR between", activity1, "and", activity2)
         return 'XOR'
     return None
 
 
 def interpreting_less_precise_constraints(step, constraints_list, matrix, activities):
     for (act1, act2), templates in constraints_list.items():
-        print(f"\nInterpreting less precise constraints between '{act1}' and '{act2}': {templates}")
+        #print(f"\nInterpreting less precise constraints between '{act1}' and '{act2}': {templates}")
         interpreted_less_precise_pair = interpreting_less_precise_constraints_pair(constraints_list, matrix, act1, act2)
 
         if step == 1:
@@ -195,12 +195,12 @@ def interpreting_less_precise_constraints(step, constraints_list, matrix, activi
                 else:
                     matrix[act1][act2] = 'DEP'
         elif step == 2:
-            print("Setting less precise interpretation comparing the results in the matrix.")
+            #print("Setting less precise interpretation comparing the results in the matrix.")
             if matrix[act1][act2] == '0' and interpreted_less_precise_pair is not None:
                 matrix[act1][act2] = interpreted_less_precise_pair
 
-        print("Interpreted less precise pair:", interpreted_less_precise_pair)
-        print("Current matrix value:", matrix[act1][act2])
+        #print("Interpreted less precise pair:", interpreted_less_precise_pair)
+        #print("Current matrix value:", matrix[act1][act2])
 
 
         # if xor_factor > 0:
@@ -250,27 +250,27 @@ def interpreting_constraints_pair(constraints_list, matrix, activity1, activity2
     xor_factor = 1 if (count_xor + count_negation) > (count_dep + count_almost_dep + count_uni + count_choice + count_indep) and count_xor > 0 else 0
 
     if dep_factor > 0:
-        print("Interpreted as DEP between", activity1, "and", activity2)
+        #print("Interpreted as DEP between", activity1, "and", activity2)
         return 'DEP'
     if depc_factor > 0:
-        print("Interpreted as DEPC between", activity1, "and", activity2)
+        #print("Interpreted as DEPC between", activity1, "and", activity2)
         return 'DEPC'
     if uni_factor > 0:
         if same_depending_relations(constraints_list, matrix, activity1, activity2) and same_dependent_gateway_relation_end_point(constraints_list, matrix, activity1, activity2):
-            print("Interpreted as UNI between", activity1, "and", activity2)
+            #print("Interpreted as UNI between", activity1, "and", activity2)
             return 'UNI'
         else:
-            print("Interpreted as DEP between", activity1, "and", activity2, "due to non parallelism relations")
+            #print("Interpreted as DEP between", activity1, "and", activity2, "due to non parallelism relations")
             return 'DEP'
     if xor_factor > 0:
-        print("Interpreted as XOR between", activity1, "and", activity2)
+        #print("Interpreted as XOR between", activity1, "and", activity2)
         return 'XOR'
     return None
 
 
 def interpreting_constraints(step, constraints_list, matrix, activities):
     for (act1, act2), templates in constraints_list.items():
-        print(f"\nInterpreting constraints between '{act1}' and '{act2}': {templates}")
+        #print(f"\nInterpreting constraints between '{act1}' and '{act2}': {templates}")
 
         interpreted_pair = interpreting_constraints_pair(constraints_list, matrix, act1, act2)
         if interpreted_pair == 'DEP':
@@ -303,7 +303,7 @@ def interpreting_constraints(step, constraints_list, matrix, activities):
             if matrix[act1][act2] == '0':
                 count_no_relations += 1
     if count_no_relations / count_total_pairs > 0.8:
-        print("High number of no relations found, re-interpreting constraints with less precision")
+        #print("High number of no relations found, re-interpreting constraints with less precision")
         matrix = interpreting_less_precise_constraints(1, constraints_list, matrix, activities)
 
     return matrix
@@ -316,7 +316,7 @@ def process_constraints(step, constraints, matrix, activities):
             m = re.match(pattern, cnst.strip())
 
             if not m:
-                print("Constraint não reconhecida:", cnst)
+                #print("Constraint não reconhecida:", cnst)
                 continue
 
             template = m.group(1).strip()
@@ -332,25 +332,25 @@ def process_constraints(step, constraints, matrix, activities):
     end = [act for act in matrix['END'] if int(matrix['END'][act]) > 0]
     pre_processed_constraints_list = validating_constraints_start_end(constraints_list, start, end)
 
-    for (act1, act2), templates in pre_processed_constraints_list.items():
-        print(f"\n1 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in pre_processed_constraints_list.items():
+        #print(f"\n1 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     processed_constraints_against_negative = validating_negative_constraints(pre_processed_constraints_list)
 
-    for (act1, act2), templates in processed_constraints_against_negative.items():
-        print(f"\n2 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_negative.items():
+        #print(f"\n2 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     processed_constraints_against_independence = validating_independence_constraints(processed_constraints_against_negative)
-    for (act1, act2), templates in processed_constraints_against_independence.items():
-        print(f"\n3 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_independence.items():
+        #print(f"\n3 - Constraints entre '{act1}' e '{act2}': {templates}")
     
     processed_constraints_against_parallel = validating_parallel_constraints(processed_constraints_against_independence)
-    for (act1, act2), templates in processed_constraints_against_parallel.items():
-        print(f"\n4 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_parallel.items():
+        #print(f"\n4 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     processed_constraints_against_response = validating_response_constraints(processed_constraints_against_parallel)
-    for (act1, act2), templates in processed_constraints_against_response.items():
-        print(f"\n5 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_response.items():
+        #print(f"\n5 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     matrix = interpreting_constraints(step, processed_constraints_against_response, matrix, activities)
     matrix = interpreting_less_precise_constraints(step, processed_constraints_against_response, matrix, activities)
@@ -377,7 +377,7 @@ def reprocess_constraints(step, constraints, first_constraints, matrix, firts_ac
             m = re.match(pattern, cnst.strip())
 
             if not m:
-                print("Constraint não reconhecida:", cnst)
+                #print("Constraint não reconhecida:", cnst)
                 continue
 
             template = m.group(1).strip()
@@ -393,43 +393,43 @@ def reprocess_constraints(step, constraints, first_constraints, matrix, firts_ac
     end = [act for act in matrix['END'] if int(matrix['END'][act]) > 0]
     pre_processed_constraints_list = validating_constraints_start_end(constraints_list, start, end)
 
-    for (act1, act2), templates in pre_processed_constraints_list.items():
-        print(f"\n1 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in pre_processed_constraints_list.items():
+        #print(f"\n1 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     processed_constraints_against_negative = validating_negative_constraints(pre_processed_constraints_list)
 
-    for (act1, act2), templates in processed_constraints_against_negative.items():
-        print(f"\n2 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_negative.items():
+        #print(f"\n2 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     processed_constraints_against_independence = validating_independence_constraints(processed_constraints_against_negative)
-    for (act1, act2), templates in processed_constraints_against_independence.items():
-        print(f"\n3 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_independence.items():
+        #print(f"\n3 - Constraints entre '{act1}' e '{act2}': {templates}")
     
     processed_constraints_against_parallel = validating_parallel_constraints(processed_constraints_against_independence)
-    for (act1, act2), templates in processed_constraints_against_parallel.items():
-        print(f"\n4 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_parallel.items():
+        #print(f"\n4 - Constraints entre '{act1}' e '{act2}': {templates}")
 
     processed_constraints_against_response = validating_response_constraints(processed_constraints_against_parallel)
-    for (act1, act2), templates in processed_constraints_against_response.items():
-        print(f"\n5 - Constraints entre '{act1}' e '{act2}': {templates}")
+    # for (act1, act2), templates in processed_constraints_against_response.items():
+        #print(f"\n5 - Constraints entre '{act1}' e '{act2}': {templates}")
 
-    print("6 - Comparing first layer and second layer constraints")
+    #print("6 - Comparing first layer and second layer constraints")
     touched_pairs = []
     for act1 in activities.keys():
         for act2 in activities.keys():
             if act1 != act2 and (act1, act2) not in touched_pairs and (act2, act1) not in touched_pairs:
                 touched_pairs.append((act1, act2))
                 touched_pairs.append((act2, act1))
-                print(f"\nComparing constraints between '{act1}' and '{act2}'")
+                #print(f"\nComparing constraints between '{act1}' and '{act2}'")
                 first_layer_templates = first_constraints.get((act1, act2), [])
                 second_layer_templates = processed_constraints_against_response.get((act1, act2), [])
-                print(f" First layer templates: {first_layer_templates}")
-                print(f" Second layer templates: {second_layer_templates}")
-                print(f"\nComparing constraints between '{act2}' and '{act1}'")
+                #print(f" First layer templates: {first_layer_templates}")
+                #print(f" Second layer templates: {second_layer_templates}")
+                #print(f"\nComparing constraints between '{act2}' and '{act1}'")
                 first_inverted_templates = first_constraints.get((act2, act1), [])
                 second_inverted_templates = processed_constraints_against_response.get((act2, act1), [])
-                print(f" First layer inverted templates: {first_inverted_templates}")
-                print(f" Second layer inverted templates: {second_inverted_templates}")
+                #print(f" First layer inverted templates: {first_inverted_templates}")
+                #print(f" Second layer inverted templates: {second_inverted_templates}")
         
 
     matrix = reinterpreting_less_precise_constraints(step, processed_constraints_against_response, first_constraints, matrix, activities)

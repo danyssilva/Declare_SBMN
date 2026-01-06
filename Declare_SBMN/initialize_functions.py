@@ -29,24 +29,24 @@ def normalize_activity_name(s):
 def initialize_activities(constraints_serialized):
     activities = {}
     for cnst in constraints_serialized:
-        # print("\n=== Processando constraint ===")
-        # pprint(cnst)
+        # #print("\n=== Processando constraint ===")
+        # p#print(cnst)
 
         if cnst.startswith(tuple(ACTIVITIES_TEMPLATES)):
             pattern = r"^'?([^[]+)\[([^\]]*)\]\s*\|\s*\|'?$"
             m = re.match(pattern, cnst.strip())
 
             if not m:
-                print("Constraint não reconhecida:", cnst)
+                #print("Constraint não reconhecida:", cnst)
                 continue
 
             template = m.group(1).rstrip('0123456789')
             cardinality = m.group(1)[len(template):]
             activity_name = m.group(2).strip()
 
-            # print("Template extraido:", template)
-            # print("Cardinalidade extraida:", cardinality)
-            # print("Atividade extraida:", activity_name)
+            # #print("Template extraido:", template)
+            # #print("Cardinalidade extraida:", cardinality)
+            # #print("Atividade extraida:", activity_name)
 
             if template == 'Init' or template == 'End':
                 cardinality = '1'
@@ -68,16 +68,16 @@ def initialize_activities(constraints_serialized):
         else:
             break
 
-    # print("\n=== Atividades extraídas com cardinalidade e template ===")
+    # #print("\n=== Atividades extraídas com cardinalidade e template ===")
     # for act, item in activities.items():
-    #     print(f"Atividade: {act}")
+    #     #print(f"Atividade: {act}")
     #     for temp, card in item.items():
-    #         print(f"Template: {temp}, Cardinalidade: {card}")
+    #         #print(f"Template: {temp}, Cardinalidade: {card}")
 
     for act, item in activities.items():
         for temp, card in item.items():
             if temp == 'Absence' and card == '0':
-                # print(f"Removendo atividade {act} com cardinalidade 0 no template Absence - Nunca pode ocorrer")
+                # #print(f"Removendo atividade {act} com cardinalidade 0 no template Absence - Nunca pode ocorrer")
                 del activities[act]
                 continue
     return activities
@@ -87,11 +87,11 @@ def initialize_matrix(constraints_serialized):
     matrix = defaultdict(lambda: defaultdict(int))
     activities = initialize_activities(constraints_serialized)
 
-    # print("\n=== Atividades que podem ocorrer com cardinalidade e template ===")
+    # #print("\n=== Atividades que podem ocorrer com cardinalidade e template ===")
     # for act, item in activities.items():
-    #     # print(f"Atividade: {act}")
+    #     # #print(f"Atividade: {act}")
     #     for temp, card in item.items():
-    #         print(f"Template: {temp}, Cardinalidade: {card}")
+    #         #print(f"Template: {temp}, Cardinalidade: {card}")
 
     for act, item in activities.items():
         matrix['BEGIN'][act] = '0'

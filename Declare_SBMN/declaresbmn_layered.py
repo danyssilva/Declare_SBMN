@@ -7,7 +7,7 @@ from Declare4Py.D4PyEventLog import D4PyEventLog
 from Declare4Py.ProcessModels.DeclareModel import DeclareModel
 from numpy import delete
 import networkx as nx
-from confirmation_functions import confirming_suspected_complex_relations_in_traces
+from confirmation_functions import confirming_suspected_complex_relations_in_traces, accuracy_tracker
 import templates_groups
 from templates_groups import ACTIVITIES_TEMPLATES, RESPONSE_TEMPLATES, IMMEDIATE_RESPONSE_TEMPLATES, ONLY_RESPONSE_TEMPLATES, NEGATION_TEMPLATES, IMMEDIATE_NEGATION_TEMPLATES, ONLY_NEGATION_TEMPLATES, NOT_AVAIABLE_FREE_SORTING, INDEPENDENCE_TEMPLATES, PARALLEL_TEMPLATES, GATEWAY_TEMPLATES, EXCLUSIVE_GATEWAY_TEMPLATES, NOT_COEXISTENCE_TEMPLATES
 import printing_functions
@@ -62,7 +62,7 @@ def sbmn_mining(constraints_serialized, event_log: D4PyEventLog):
     for line in sbmn_final:
         print(line)
 
-    matrix_final, sbmn_final = confirming_suspected_complex_relations_in_traces(matrix_final, event_log)
+    matrix_final, sbmn_final, accuracy_tracker = confirming_suspected_complex_relations_in_traces(matrix_final, event_log)
 
     print("\n=== After confirmation Matrix ===")
     print_matrix(matrix_final)
@@ -72,7 +72,7 @@ def sbmn_mining(constraints_serialized, event_log: D4PyEventLog):
         print(line)
 
 
-    return matrix_final, sbmn_final
+    return matrix_final, sbmn_final, accuracy_tracker
 
 
 if __name__ == "__main__":
@@ -86,13 +86,12 @@ if __name__ == "__main__":
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/ComputerRepair_1/log_sintetico_multimodelo.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/ComputerRepair_2/RM_ComputerRepair_2.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/ComputerRepair_2/log_sintetico_multimodelo.xes"  # ajuste
-    # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/permition_2/RM_permition_2proc.xes"  # ajuste
+    log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/permition_2/RM_permition_2proc.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS/E2_proc/RM_E2proc.xes"  # ajuste
-    # log_path = r"C:/Users/danys/Downloads/INPUTS/INPUTS/FOLDERS4/ITIL/BPIC14-PreProcessed-Filtered.xes"  # ajuste
+    # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS4/ITIL/BPIC14-PreProcessed-Filtered.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/MINIMETAL/mini_metal_log.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/MINIMETAL/metalmec_log.xes"  # ajuste
-    # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/SELECAO/log_inscricao.xes"  # ajuste
-    log_path = r"C:/Users/danys/Downloads/INPUTS/INPUTS/SELECAO/log_inscricao_candidato.xes"  # ajuste
+    # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXPERIMENTOS/SELECAO/log_inscricao_candidato.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/example_1.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/FOLDERS4/ComputerRepair_1/log_sintetico_2_modelos.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/log_exemplo_paralelismo.xes"  # ajuste
@@ -100,6 +99,8 @@ if __name__ == "__main__":
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/log_exemplo_xor.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/log_exemplo_uniao_xor_depc.xes"  # ajuste
     # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXEMPLOS/log_exemplo_promiscuityviolation.xes"  # ajuste
+    # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXPERIMENTOS/caseHandling_1/log_sintetico_multimodelo.xes"  # ajuste
+    # log_path = r"F:/Danielle/Mestrado/Declare_SBMN/INPUTS/EXPERIMENTOS/complaint_1/log_sintetico_multimodelo.xes"  # ajuste
 
     # carregar log
     event_log = D4PyEventLog(case_name="case:concept:name")
@@ -124,7 +125,10 @@ if __name__ == "__main__":
 
      # mine SBMN model
 
-    matrix, sbmn = sbmn_mining(discovered_model_first_layer.serialized_constraints, event_log)
+    matrix, sbmn, accuracy_summary = sbmn_mining(discovered_model_first_layer.serialized_constraints, event_log)
+
+    print("\n=== Acuracy Tracker ===")
+    print(accuracy_summary)
 
     sbmn_model = parse_sbmn_model(sbmn)
 
